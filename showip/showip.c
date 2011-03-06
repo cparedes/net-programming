@@ -29,6 +29,8 @@ int main(int argc, char *argv[]) {
   for ( p = res ; p != NULL ; p = p->ai_next) {
     void *addr;
     char *ipver;
+    char hostname[NI_MAXHOST] = "";
+    int error;
 
     // get the pointer to the address itself.  different fields in v4/v6
     if (p->ai_family == AF_INET) {
@@ -41,9 +43,11 @@ int main(int argc, char *argv[]) {
       ipver = "IPv6";
     }
 
+    error = getnameinfo(p->ai_addr, p->ai_addrlen, hostname, NI_MAXHOST, NULL, 0, 0);
+
     // convert IP to a string and print it.
     inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
-    printf("  %s: %s\n", ipver, ipstr);
+    printf("  %s: %s, hostname: %s\n", ipver, ipstr, hostname);
   }
 
   freeaddrinfo(res);  // free linked list
